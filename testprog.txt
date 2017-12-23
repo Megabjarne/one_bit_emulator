@@ -1,0 +1,179 @@
+
+
+main:
+in (40-55)
+in (56-71)
+#print the given arguments
+out (40-55)
+print
+out (56-71)
+print
+
+call add_16bit
+
+#print the answer
+out (72-87)
+print
+
+halt
+
+
+
+add_16bit:
+mov (48-55), (16-23)
+mov (64-71), (24-31)
+
+call add_8bit
+
+mov (32-39), (80-87)
+mov c, (88)
+
+mov (40-47), (16-23)
+mov (56-63), (24-31)
+
+call add_8bit
+mov c, (89)
+mov (88), c
+
+#if no carry, don't add one
+jmprnz 4, c
+mov (32-39), (72-79)
+mov (89), c
+ret
+
+mov (32-39), (16-23)
+mov 0, (24-31)
+mov 1, (31)
+call add_8bit
+mov (32-39), (72-79)
+mov c, a
+mov (89), b
+or b
+mov a, c
+ret
+
+
+
+add_8bit:
+
+mov (20-23), (0-3)
+mov (28-31), (4-7)
+call add_4bit
+mov c, (14)
+mov (8-11), (36-39)
+mov (16-19), (0-3)
+mov (24-27), (4-7)
+call add_4bit
+mov c, (15)
+mov (14), c
+
+jmprnz 4, c
+mov (15), c
+mov (8-11), (32-35)
+ret
+
+mov (8-11), (0-3)
+mov 0, (4)
+mov 0, (5)
+mov 0, (6)
+mov 1, (7)
+call add_4bit
+mov (8-11), (32-35)
+mov c, a
+or (15)
+mov a, c
+
+ret
+
+
+
+
+add_4bit:
+
+#bit 3
+mov (3), a
+mov (7), b
+call xor
+jmprz 3, a
+mov 1, (11)
+jmpr 2
+mov 0, (11)
+mov (3), a
+mov (7), b
+and b
+mov a, c
+
+#bit 2
+mov c, (12)
+mov (2), a
+mov (6), b
+call xor
+mov a, (13)
+mov (12), b
+call xor
+mov a, (10)
+mov (13), a
+mov (12), b
+and b
+mov a, c
+mov (2), a
+mov (6), b
+and b
+or c
+mov a, c
+
+#bit 1
+mov c, (12)
+mov (1), a
+mov (5), b
+call xor
+mov a, (13)
+mov (12), b
+call xor
+mov a, (9)
+mov (13), a
+mov (12), b
+and b
+mov a, c
+mov (1), a
+mov (5), b
+and b
+or c
+mov a, c
+
+#bit 0
+mov c, (12)
+mov (0), a
+mov (4), b
+call xor
+mov a, (13)
+mov (12), b
+call xor
+mov a, (8)
+mov (13), a
+mov (12), b
+and b
+mov a, c
+mov (0), a
+mov (4), b
+and b
+or c
+mov a, c
+
+ret
+
+
+
+#xor - takes reg a and reg b, returns the xored value in register a
+xor:
+#	!(a&b) & (a|b)
+mov a, c
+and b
+not
+swp a, c
+or b
+and c
+ret
+
+crash:
+
